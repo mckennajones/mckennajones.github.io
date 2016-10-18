@@ -3,5 +3,23 @@ html {
 }
 
 body {
-        font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+
+.home {
+  background: #fffffa;
+}
+.home h1{
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.home span{
+  text-align: center;
+  text-transform: none;
+  display: block;
+}
+
+.links {
+  text-align: center;
 }
