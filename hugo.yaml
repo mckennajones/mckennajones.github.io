@@ -1,0 +1,12 @@
+baseURL: 'https://mckennajones.com/'
+languageCode: 'en-us'
+title: 'McKenna Jones'
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
+caches:
+  images:
+    dir: :cacheDir/static/photos

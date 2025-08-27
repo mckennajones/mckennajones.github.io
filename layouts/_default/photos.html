@@ -1,0 +1,88 @@
+{{ define "main" }}
+<div class="photos-page">
+  <h1>{{ .Title }}</h1>
+  
+  {{ .Content }}
+  
+  <div class="photo-grid">
+    {{ $photos := readDir "static/photos" }}
+    {{ $photoList := slice }}
+    {{ range $photos }}
+      {{ if not .IsDir }}
+        {{ $ext := path.Ext .Name }}
+        {{ if in (slice ".jpg" ".jpeg" ".png" ".webp") (lower $ext) }}
+          {{ $photoList = $photoList | append .Name }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ range $photoList }}
+      <div class="photo-item">
+        <img src="/photos/{{ . }}" alt="Photo" loading="lazy" onclick="openLightbox('{{ . }}')">
+      </div>
+    {{ end }}
+  </div>
+  
+  <footer>
+    <a href="/">← Home</a>
+  </footer>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close">&times;</span>
+  <span class="lightbox-prev" onclick="event.stopPropagation(); prevPhoto()">&#8249;</span>
+  <span class="lightbox-next" onclick="event.stopPropagation(); nextPhoto()">&#8250;</span>
+  <img id="lightbox-img" class="lightbox-content" src="" alt="">
+</div>
+
+<script>
+// Photo list for navigation
+const photos = [
+{{- range $i, $photo := $photoList }}
+{{- if $i }},{{ end }}
+"{{ $photo }}"
+{{- end }}
+];
+let currentPhotoIndex = 0;
+
+function openLightbox(photoName) {
+  currentPhotoIndex = photos.indexOf(photoName);
+  document.getElementById('lightbox').style.display = 'flex';
+  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+function nextPhoto() {
+  currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+}
+
+function prevPhoto() {
+  currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('lightbox').style.display === 'flex') {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    } else if (e.key === 'ArrowRight') {
+      nextPhoto();
+    } else if (e.key === 'ArrowLeft') {
+      prevPhoto();
+    }
+  }
+});
+
+// Prevent closing when clicking on the image itself
+document.getElementById('lightbox-img').addEventListener('click', function(e) {
+  e.stopPropagation();
+});
+</script>
+{{ end }}
