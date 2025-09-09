@@ -5,19 +5,26 @@
   {{ .Content }}
   
   <div class="photo-grid">
-    {{ $photos := readDir "static/photos" }}
+    {{ $photos := resources.Match "photos/*" }}
     {{ $photoList := slice }}
     {{ range $photos }}
-      {{ if not .IsDir }}
-        {{ $ext := path.Ext .Name }}
-        {{ if in (slice ".jpg" ".jpeg" ".png" ".webp") (lower $ext) }}
-          {{ $photoList = $photoList | append .Name }}
-        {{ end }}
+      {{ $ext := path.Ext .Name }}
+      {{ if in (slice ".jpg" ".jpeg" ".png" ".webp") (lower $ext) }}
+        
+        {{ $thumbnail := .Resize "1000x webp" }}
+        {{ $thumbnailFallback := .Resize "1000x jpg" }}
+        {{ $large := .Process "webp" }}
+        
+        {{ $photoData := dict "name" .Name "thumbnail" $thumbnail "thumbnailFallback" $thumbnailFallback "large" $large }}
+        {{ $photoList = $photoList | append $photoData }}
       {{ end }}
     {{ end }}
     {{ range $photoList }}
       <div class="photo-item">
-        <img src="/photos/{{ . }}" alt="Photo" loading="lazy" onclick="openLightbox('{{ . }}')">
+        <picture onclick="openLightbox('{{ .large.RelPermalink }}')">
+          <source type="image/webp" srcset="{{ .thumbnail.RelPermalink }}">
+          <img src="{{ .thumbnailFallback.RelPermalink }}" alt="Photo" loading="lazy">
+        </picture>
       </div>
     {{ end }}
   </div>
@@ -40,15 +47,15 @@
 const photos = [
 {{- range $i, $photo := $photoList }}
 {{- if $i }},{{ end }}
-"{{ $photo }}"
+"{{ $photo.large.RelPermalink }}"
 {{- end }}
 ];
 let currentPhotoIndex = 0;
 
-function openLightbox(photoName) {
-  currentPhotoIndex = photos.indexOf(photoName);
+function openLightbox(photoUrl) {
+  currentPhotoIndex = photos.indexOf(photoUrl);
   document.getElementById('lightbox').style.display = 'flex';
-  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+  document.getElementById('lightbox-img').src = photos[currentPhotoIndex];
   document.body.style.overflow = 'hidden';
 }
 
@@ -59,12 +66,12 @@ function closeLightbox() {
 
 function nextPhoto() {
   currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
-  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+  document.getElementById('lightbox-img').src = photos[currentPhotoIndex];
 }
 
 function prevPhoto() {
   currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
-  document.getElementById('lightbox-img').src = '/photos/' + photos[currentPhotoIndex];
+  document.getElementById('lightbox-img').src = photos[currentPhotoIndex];
 }
 
 // Keyboard navigation
