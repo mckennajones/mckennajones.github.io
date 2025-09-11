@@ -12,10 +12,55 @@
     <div class="nav-links">
       <a href="/about" {{ if eq .RelPermalink "/about/" }}class="active"{{ end }}>About</a>
       <a href="/photos" {{ if eq .RelPermalink "/photos/" }}class="active"{{ end }}>Photos</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
     </div>
   </nav>
   <div class="container">
     {{ block "main" . }}{{ end }}
   </div>
+  
+  <script>
+    // Theme management
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.querySelector('.theme-icon');
+    
+    // Get saved theme or default to system preference
+    function getPreferredTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    
+    // Apply theme
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', theme);
+    }
+    
+    // Toggle theme
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    }
+    
+    // Initialize theme
+    applyTheme(getPreferredTheme());
+    
+    // Add click handler
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  </script>
 </body>
 </html>
