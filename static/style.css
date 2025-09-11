@@ -14,7 +14,42 @@ body {
   background: #fff;
   max-width: 600px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 0 20px 40px 20px;
+}
+
+/* Navigation */
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 30px;
+}
+
+.nav-home {
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.nav-links a.active {
+  text-decoration: underline;
+  font-weight: 600;
 }
 
 /* Typography */
@@ -213,7 +248,18 @@ article footer {
 
 @media (max-width: 600px) {
   body {
-    padding: 20px 15px;
+    padding: 0 15px 20px 15px;
+  }
+  
+  .navigation {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    padding: 20px 0;
+  }
+  
+  .nav-links {
+    gap: 15px;
   }
   
   .photo-grid {
