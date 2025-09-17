@@ -119,7 +119,7 @@ a:hover {
 }
 
 /* Lists */
-ul {
+ul.post-list {
   list-style: none;
   margin: 15px 0;
 }
@@ -156,6 +156,10 @@ article footer {
 .content ul, .content ol {
   margin: 15px 0;
   padding-left: 30px;
+}
+
+.content ul {
+  list-style: disc;
 }
 
 .content li {
